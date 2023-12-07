@@ -5,12 +5,12 @@
     "Sharpness", "LensSqueezeFactor", "ImageOrientation", "LookName", "LookLUTMode", "LookLUTOffset", "LookLUTSize", "LookSaturation", 
     "CDLSaturation", "CDLSlopeR", "CDLSlopeG", "CDLSlopeB", "CDLOffsetR", "CDLOffsetG", "CDLOffsetB", "CDLPowerR", "CDLPowerG", "CDLPowerB", "CDLMode",
     "CameraTypeId", "CameraRevision", "CameraSerialNumber", "CameraId", "CameraIndex", "SystemImageCreationDate", "SystemImageCreationTime", "SystemImageTimeZoneOffset", 
-    "SystemImageTimeZoneDST", "ExposureTime", "SystemImageTimeZoneDST", "SensorFPS", "ProjectFPS", "MasterTC", "MasterTCFrameCount", "MasterTCTimeBase", 
+    "SystemImageTimeZoneDST", "ExposureTime", "ShutterAngle", "SensorFPS", "ProjectFPS", "MasterTC", "MasterTCFrameCount", "MasterTCTimeBase", 
     "StorageMediaSerialNumber", "CameraFamily", "RecorderType", "MirrorShutterRunning", "Vari", "UUID", "CameraModel", "CameraProduct", "CameraSubProduct", 
     "LensDistanceUnit", "LensFocusDistance", "LensFocalLength", "LensSerialNumber", "LensLinearIris", "LensIris", "NDFilterType", "NDFilterDensity", "LensModel", 
     "CameraTilt", "CameraRoll", "CircleTake", "Reel", "Scene", "Take", "Director", "Cinematographer", "Production", 
     "ProductionCompany", "VarUserInfoFields", "CameraClipName", 
     "FrameLineFile1", "FrameLineFile2", "FrameLine1A", "FrameLine1B", "FrameLine1C", "FrameLine2A", "FrameLine2B", "FrameLine2C"],
     "minimal" : ["ImageWidth", "ImageHeight", "ActiveImageLeft", "ActiveImageTop", "ActiveImageWidth", "ActiveImageHeight", "FullImageWidth", "FullImageHeigth",
-    "WhiteBalance", "WhiteBalanceCC", "ExposureIndexASA", "LensSqueezeFactor", "CameraModel", "CameraClipName", "MasterTC"]
+    "WhiteBalance", "WhiteBalanceCC", "ExposureIndexASA", "ShutterAngle", "LensSqueezeFactor", "CameraModel", "CameraClipName", "MasterTC"]
 }
