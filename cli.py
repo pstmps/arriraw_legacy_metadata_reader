@@ -20,14 +20,18 @@ def load_config(file, keys=[]):
     return config
 
 def find_files(path, extensions):
+    file_found = False
     for root, dirs, files in os.walk(path):
         for file in files:
             if file.endswith(tuple(extensions)):
                 yield os.path.join(root, file)
+                file_found = True
                 break
+    if not file_found:
+        raise FileNotFoundError("No files with the given extensions were found.")
 
 @click.command()
-@click.option('--path', '-p', 
+@click.option('--inputpath', '-i', 
               help='Path to the directory containing the files to be processed.', 
               prompt='Path to the directory containing the files to be processed.')
 @click.option('--verbose', '-v',
@@ -67,6 +71,7 @@ def run(path, verbose, config, outputpath, format, fields):
     output = {}
 
     for file in find_files(path.strip('\'').strip('\"'), supported_files):
+
         filename = os.path.splitext(os.path.basename(file))[0]
         arri = ArriRawLegacyMetadataReader(file, fields_to_extract=fields)
         output[filename] = arri.get_dictionary()

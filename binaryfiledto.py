@@ -164,35 +164,10 @@ class BinaryFileDTO:
         return BinaryFileDTO.convert_data_to_tstop(data)
     
     @staticmethod
-    def create_bit_mask(bit_positions: list) -> int:
-        """
-        Creates a bit mask for the specified bit positions.
-        Args:
-            bit_positions (list): the positions of the bits for the mask
-        Returns:
-            int: the bit mask
-        """
-        return sum([2**i for i in bit_positions])
-
-    @staticmethod
-    def read_bits(input: bytes, endianness: str, bit_position: list) -> int:
-        """
-        Reads specific bits from a byte object
-        Args:
-            input (bytes): the byte object to read from
-            endianness (str): the endianness of the byte object
-            bit_position (list): the position of the bits to read
-        Returns:
-            int: the bits read from the byte object
-        """
-        data = int.from_bytes(input.read(4), byteorder=endianness)
-        # Create a mask for the specified bits
-        mask = BinaryFileDTO.create_bit_mask(bit_position)
-        # mask = sum([2**i for i in bit_position])
-        # Use bitwise AND to isolate the specified bits, then right shift to move them to the least significant position
-        specific_bits = (data & mask) >> min(bit_position)
-
-        return specific_bits
+    def read_bit(data: bytes, bit_position: int, endianness: str) -> int:
+        value = int.from_bytes(data.read(4), byteorder=endianness)
+        print(value)
+        return (value >> bit_position) & 1
 
     @staticmethod
     def bytestoTC(TCbytes: bytes) -> str:
@@ -374,7 +349,7 @@ class BinaryFileDTO:
             dict: the field handled
         """
         endianness = 'big' if endianness == '>' else 'little'
-        return {field['name']: self.read_bits(self.file, endianness, field['bit_position'])}
+        return {field['name']: self.read_bit(data=self.file, bit_position=field['bit_position'], endianness=endianness)}
 
     def handle_default_field(self, field: dict, endianness: str) -> dict:
         """
