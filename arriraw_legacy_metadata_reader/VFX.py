@@ -1,4 +1,4 @@
-from binaryfiledto import BinaryFileDTO
+from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
 class VFX(BinaryFileDTO):
     def __init__(self, file, fields_to_extract=None):

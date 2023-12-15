@@ -1,5 +1,5 @@
 import pytest
-from binaryfiledto import BinaryFileDTO
+from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
 import struct
 import io

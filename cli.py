@@ -1,4 +1,4 @@
-from arriraw_legacy_metadata_reader import ArriRawLegacyMetadataReader
+from arriraw_legacy_metadata_reader.arriraw_legacy_metadata_reader import ArriRawLegacyMetadataReader
 import json
 import os
 import click
@@ -50,7 +50,7 @@ def find_files(path, extensions):
                 help='Fields to extract. If not specified, default fields will be extracted.',
                 type=click.Choice(['all', 'minimal', 'default']),
                 default='default')
-def run(path, verbose, config, outputpath, format, fields):
+def run(inputpath, verbose, config, outputpath, format, fields):
 
     if outputpath is None:
         outputpath = os.getcwd()
@@ -70,11 +70,14 @@ def run(path, verbose, config, outputpath, format, fields):
 
     output = {}
 
-    for file in find_files(path.strip('\'').strip('\"'), supported_files):
+    for file in find_files(inputpath.strip('\'').strip('\"'), supported_files):
 
         filename = os.path.splitext(os.path.basename(file))[0]
         arri = ArriRawLegacyMetadataReader(file, fields_to_extract=fields)
         output[filename] = arri.get_dictionary()
+
+    if verbose:
+        click.echo(f'Input path: {output}')
 
     if format == 'csv':
         df = pd.DataFrame.from_dict(output, orient='index')

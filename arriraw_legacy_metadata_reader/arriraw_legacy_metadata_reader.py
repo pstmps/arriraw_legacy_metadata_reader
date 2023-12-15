@@ -1,12 +1,12 @@
-from IDI import IDI
-from ICI import ICI
-from CDI import CDI
-from LDI import LDI
-from VFX import VFX
-from CID import CID
-from SID import SID
-from FLI import FLI
-from NRI import NRI
+from arriraw_legacy_metadata_reader.IDI import IDI
+from arriraw_legacy_metadata_reader.ICI import ICI
+from arriraw_legacy_metadata_reader.CDI import CDI
+from arriraw_legacy_metadata_reader.LDI import LDI
+from arriraw_legacy_metadata_reader.VFX import VFX
+from arriraw_legacy_metadata_reader.CID import CID
+from arriraw_legacy_metadata_reader.SID import SID
+from arriraw_legacy_metadata_reader.FLI import FLI
+from arriraw_legacy_metadata_reader.NRI import NRI
 
 import pandas as pd
 import json
@@ -59,3 +59,5 @@ class ArriRawLegacyMetadataReader:
 
         return fields
 
+def read_metadata(file_path, fields_to_extract=None) -> dict:
+    return ArriRawLegacyMetadataReader(file_path, fields_to_extract=fields_to_extract).get_dictionary()

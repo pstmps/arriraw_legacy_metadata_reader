@@ -42,7 +42,7 @@
         ]
     },
     "python.testing.pytestArgs": [
-        "tests",
+        "./arriraw_legacy_metadata_reader/tests/",
         "-vv",
     ],
     "python.testing.unittestEnabled": false,
