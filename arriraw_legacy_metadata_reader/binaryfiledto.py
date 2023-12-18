@@ -1,3 +1,6 @@
+"""
+Base class for metadata fields for ARRIRAW file sequences
+"""
 
 import struct
 import binascii
@@ -5,8 +8,9 @@ import uuid
 # import pandas as pd
 import io
 from typing import Union
+from abc import ABC
 
-class BinaryFileDTO:
+class BinaryFileDTO(ABC):
     """
     Base class for reading binary ARRIRAW files
     It is not intended to be used directly, but rather to be inherited by other classes
@@ -14,8 +18,11 @@ class BinaryFileDTO:
     - list_fields: returns a list of all the fields in the file
     - list_data_names: returns a list of all the data names in the file
     - get_data: returns a dictionary of all the data in the file
+    - extract_metadata: extracts the metadata from the file
+    - handle_field: handles the field based on its datatype
 
     """
+
     def __init__(self, file, fields_to_extract=None):
         if isinstance(file, io.BufferedReader):
             self.file = file
@@ -24,7 +31,7 @@ class BinaryFileDTO:
         else:
             raise TypeError('file must be a bytes object or a BufferedReader')
         self.fields_to_extract = fields_to_extract
-        self.endianness = self.determine_endianness()
+        self.endianness = self._determine_endianness()
 
     def list_fields(self) -> list:
         """
@@ -50,53 +57,55 @@ class BinaryFileDTO:
         """
         return self.data
 
-    def read_and_unpack(self, input: bytes, format_string: str) -> Union[int, float, str, bytes]:
+    def _read_and_unpack(self, input_bytes: bytes, format_string: str) \
+                        -> Union[int, float, str, bytes]:
         """
         Reads and unpacks data from the file
         Args:
-            format_string (str): format string for the struct.unpack method containing the datatype and endianness
+            format_string (str): format string for the struct.unpack 
+            method containing the datatype and endianness
         Returns:
             Union[int, float, str, bytes]: the data read from the file
         """
-        return struct.unpack(format_string, input.read(struct.calcsize(format_string)))[0]
+        return struct.unpack(format_string, input_bytes.read(struct.calcsize(format_string)))[0]
 
-    def determine_endianness(self) -> str:
+    def _determine_endianness(self) -> str:
         """
         Determines the endianness of the file
         Returns:
             str: '<' for little endian, '>' for big endian
         """
         self.file.seek(0)
-        ariMagic = self.file.read(4)
-        ariByteOrder = self.read_and_unpack(self.file,'<I')
-        isLittleEndian = ariByteOrder == 0x12345678
-        return '<' if isLittleEndian else '>'
+        ari_magic = self.file.read(4)
+        ari_byte_order = self._read_and_unpack(self.file, '<I')
+        is_little_endian = ari_byte_order == 0x12345678
+        return '<' if is_little_endian else '>'
 
-    def read_string(self, input: bytes, length: int, endianness: str) -> str:
+    def _read_string(self, input_bytes: bytes, length: int, endianness: str) -> str:
         """
         Reads a string from a byte object
         Args:
-            input (bytes): the byte object to read from
+            input_bytes (bytes): the byte object to read from
             length (int): the length of the string to read
             endianness (str): the endianness of the byte object
         Returns:
             str: the string read from the byte object
         """
-        bytes_data = input.read(length)
+        bytes_data = input_bytes.read(length)
         bytes_data = bytes_data[::-1] if endianness == '<' else bytes_data
         return bytes_data.decode('utf-8', 'ignore').rstrip('\x00').replace('\x00', '')
 
-    def read_frameline(self, input: bytes, frameline_number: str, endianness: str) -> dict:
+    def _read_frameline(self, input_bytes: bytes, frameline_number: str, endianness: str) -> dict:
         """
         Reads a frameline object from a byte object
         Args:
-            input (bytes): the byte object to read from
+            input_bytes (bytes): the byte object to read from
             frameline_number (str): the number of the frameline to read
             endianness (str): the endianness of the byte object
         Returns:
             dict: the frameline object read from the byte object
         """
-        frameline_type = self.read_and_unpack(input=input, format_string='<I')
+        frameline_type = self._read_and_unpack(input_bytes=input_bytes, format_string='<I')
         frameline = {}
 
         if frameline_type == 1:
@@ -114,21 +123,21 @@ class BinaryFileDTO:
             frameline[f'FrameLine{frameline_number}Width'] = defaultvalue
             frameline[f'FrameLine{frameline_number}Height'] = defaultvalue
         else:
-            frameline[f'FrameLine{frameline_number}Name'] = self.read_string(
-                input=input, length=32, endianness=endianness)
-            frameline[f'FrameLine{frameline_number}Left'] = self.read_and_unpack(
-                input=input,format_string='<H')
-            frameline[f'FrameLine{frameline_number}Top'] = self.read_and_unpack(
-                input=input,format_string='<H')
-            frameline[f'FrameLine{frameline_number}Width'] = self.read_and_unpack(
-                input=input,format_string='<H')
-            frameline[f'FrameLine{frameline_number}Height'] = self.read_and_unpack(
-                input=input,format_string='<H')
+            frameline[f'FrameLine{frameline_number}Name'] = self._read_string(
+                input_bytes=input_bytes, length=32, endianness=endianness)
+            frameline[f'FrameLine{frameline_number}Left'] = self._read_and_unpack(
+                input_bytes=input_bytes, format_string='<H')
+            frameline[f'FrameLine{frameline_number}Top'] = self._read_and_unpack(
+                input_bytes=input_bytes, format_string='<H')
+            frameline[f'FrameLine{frameline_number}Width'] = self._read_and_unpack(
+                input_bytes=input_bytes, format_string='<H')
+            frameline[f'FrameLine{frameline_number}Height'] = self._read_and_unpack(
+                input_bytes=input_bytes, format_string='<H')
 
         return frameline
 
     @staticmethod
-    def convert_data_to_tstop(data: int) -> str:
+    def _convert_data_to_tstop(data: int) -> str:
         """
         Converts a data value to a TStop as per the ARRI Documentation
         Args:
@@ -149,36 +158,36 @@ class BinaryFileDTO:
         return str(round(tstop, 2))
 
     @staticmethod
-    def read_tstop(input: bytes, endianness: str) -> str:
+    def _read_tstop(input_bytes: bytes, endianness: str) -> str:
         """
         Reads a TStop from a byte object
-        Converts the bytes to a float and then to a TStop via the convert_data_to_tstop method
+        Converts the bytes to a float and then to a TStop via the _convert_data_to_tstop method
         Args:
-            input (bytes): the byte object to read from
+            input_bytes (bytes): the byte object to read from
             endianness (str): the endianness of the byte object
         Returns:
             str: the TStop read from the byte object
         """
-        #TODO: Add conversion to Tstop with n/10th notation (2.0 8/10)
-        data = int.from_bytes(input.read(4), byteorder=endianness)
-        return BinaryFileDTO.convert_data_to_tstop(data)
-    
+        # TODO: Add conversion to Tstop with n/10th notation (2.0 8/10)
+        data = int.from_bytes(input_bytes.read(4), byteorder=endianness)
+        return BinaryFileDTO._convert_data_to_tstop(data)
+
     @staticmethod
-    def read_bit(data: bytes, bit_position: int, endianness: str) -> int:
+    def _read_bit(data: bytes, bit_position: int, endianness: str) -> int:
         value = int.from_bytes(data.read(4), byteorder=endianness)
         print(value)
         return (value >> bit_position) & 1
 
     @staticmethod
-    def bytestoTC(TCbytes: bytes) -> str:
+    def _bytes_to_time_code(time_code_bytes: bytes) -> str:
         """
         Converts a byte object to a timecode
         Args:
-            TCbytes (bytes): the byte object to convert
+            time_code_bytes (bytes): the byte object to convert
         Returns:
             str: the timecode converted from the byte object
         """
-        hex_tc = binascii.hexlify(TCbytes).decode()
+        hex_tc = binascii.hexlify(time_code_bytes).decode()
         reversed_tc = ''.join([hex_tc[i:i+2]
                               for i in range(0, len(hex_tc), 2)][::-1])
         timecode = ':'.join([reversed_tc[i:i+2]
@@ -186,7 +195,7 @@ class BinaryFileDTO:
         return timecode
 
     @staticmethod
-    def split_user_string(input_string: str) -> dict:
+    def _split_user_string(input_string: str) -> dict:
         """
         Splits the Arri UserString into a dictionary
         Args:
@@ -195,10 +204,15 @@ class BinaryFileDTO:
             dict: the UserString split into a dictionary
         """
         pairs = input_string.split(';')
-        return {pair.split(':')[0].strip(): pair.split(':')[1].strip() for pair in pairs if ':' in pair}
-        
+        return {pair.split(':')[0].strip(): pair.split(':')[1].strip()
+                for pair in pairs if ':' in pair}
+
     @staticmethod
-    def bcd_to_str(bcd: bytes, format: str, spacer: str, endianness: str, prefix : str= None) -> str:
+    def _bcd_to_str(bcd: bytes,
+                    format_string: str,
+                    spacer: str,
+                    endianness: str,
+                    prefix: str = None) -> str:
         """
         Converts a byte object in BCD - (Binary Code Decimal;) format to a string
         Args:
@@ -217,13 +231,22 @@ class BinaryFileDTO:
         else:
             date_string = "".join(decimal_digits)
 
-        prefix is prefix if prefix is not None else '' 
-        if format == 'date':
+        if prefix is None:
+            prefix = ''
+
+        if format_string == 'date':
             return f"{date_string[:4]}{spacer}{date_string[4:6]}{spacer}{date_string[6:8]}"
-        elif format == 'time':
-            return f"{date_string[:2]}{spacer}{date_string[2:4]}{spacer}{date_string[4:6]}{spacer}{date_string[6:8]}"
-        elif format == 'offset':
+        if format_string == 'time':
+            return (
+                f"{date_string[:2]}{spacer}"
+                f"{date_string[2:4]}{spacer}"
+                f"{date_string[4:6]}{spacer}"
+                f"{date_string[6:8]}"
+            )
+        if format_string == 'offset':
             return f"{prefix}{date_string[4:6]}{spacer}{date_string[6:8]}"
+        
+        return date_string
 
     def extract_metadata(self) -> dict:
         """
@@ -240,7 +263,8 @@ class BinaryFileDTO:
                 metadata.update(self.handle_field(field, endianness))
 
                 if field.get('mapping', None) is not None:
-                    metadata[field['name']] = field['mapping'].get(metadata[field['name']], 'Unknown')
+                    metadata[field['name']] = field['mapping'].get(
+                        metadata[field['name']], 'Unknown')
 
         return metadata
 
@@ -254,24 +278,24 @@ class BinaryFileDTO:
             dict: the field handled
         """
         field_handlers = {
-            'string': self.handle_string_field,
-            'UserString': self.handle_user_string_field,
-            'timecode': self.handle_timecode_field,
-            'TStop': self.handle_tstop_field,
-            'frameline': self.handle_frameline_field,
-            'uuid': self.handle_uuid_field,
-            'bits': self.handle_bits_field,
-            'date': self.handle_date_field,
-            'time': self.handle_time_field,
-            'offset': self.handle_offset_field,
-            'float': self.handle_float_field,
+            'string': self._handle_string_field,
+            'UserString': self._handle_user_string_field,
+            'timecode': self._handle_timecode_field,
+            'TStop': self._handle_tstop_field,
+            'frameline': self._handle_frameline_field,
+            'uuid': self._handle_uuid_field,
+            'bits': self._handle_bits_field,
+            'date': self._handle_date_field,
+            'time': self._handle_time_field,
+            'offset': self._handle_offset_field,
+            'float': self._handle_float_field,
         }
 
         handler = field_handlers.get(
-            field['datatype'], self.handle_default_field)
+            field['datatype'], self._handle_default_field)
         return handler(field, endianness)
 
-    def handle_string_field(self, field: dict, endianness: str) -> dict:
+    def _handle_string_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a string field
         Args:
@@ -280,9 +304,9 @@ class BinaryFileDTO:
         Returns:
             dict: the field handled
         """
-        return {field['name']: self.read_string(self.file, field['length'], endianness)}
+        return {field['name']: self._read_string(self.file, field['length'], endianness)}
 
-    def handle_user_string_field(self, field: dict, endianness: str) -> dict:
+    def _handle_user_string_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a ARRI User string field
         Args:
@@ -291,9 +315,9 @@ class BinaryFileDTO:
         Returns:
             dict: the field handled
         """
-        return self.split_user_string(self.read_string(self.file, field['length'], endianness))
+        return self._split_user_string(self._read_string(self.file, field['length'], endianness))
 
-    def handle_timecode_field(self, field: dict, endianness: str) -> dict:
+    def _handle_timecode_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a timecode field
         Args:
@@ -302,9 +326,9 @@ class BinaryFileDTO:
         Returns:
             dict: the field handled
         """
-        return {field['name']: self.bytestoTC(self.file.read(4))}
+        return {field['name']: self._bytes_to_time_code(self.file.read(4))}
 
-    def handle_tstop_field(self, field: dict, endianness: str) -> dict:
+    def _handle_tstop_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a TStop field
         Args:
@@ -314,9 +338,9 @@ class BinaryFileDTO:
             dict: the field handled
         """
         endianness = 'big' if endianness == '>' else 'little'
-        return {field['name']: self.read_tstop(self.file, endianness)}
+        return {field['name']: self._read_tstop(self.file, endianness)}
 
-    def handle_frameline_field(self, field: dict, endianness: str) -> dict:
+    def _handle_frameline_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a frameline field
         Args:
@@ -326,9 +350,9 @@ class BinaryFileDTO:
             dict: the field handled
         """
         frameline_number = field['number']
-        return self.read_frameline(self.file, frameline_number, endianness)
+        return self._read_frameline(self.file, frameline_number, endianness)
 
-    def handle_uuid_field(self, field: dict, endianness: str) -> dict:
+    def _handle_uuid_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a UUID field
         Args:
@@ -339,7 +363,7 @@ class BinaryFileDTO:
         """
         return {field['name']: str(uuid.UUID(bytes_le=self.file.read(16)))}
 
-    def handle_bits_field(self, field: dict, endianness: str) -> dict:
+    def _handle_bits_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a bits field
         Args:
@@ -349,9 +373,11 @@ class BinaryFileDTO:
             dict: the field handled
         """
         endianness = 'big' if endianness == '>' else 'little'
-        return {field['name']: self.read_bit(data=self.file, bit_position=field['bit_position'], endianness=endianness)}
+        return {field['name']: self._read_bit(data=self.file,
+                                              bit_position=field['bit_position'],
+                                              endianness=endianness)}
 
-    def handle_default_field(self, field: dict, endianness: str) -> dict:
+    def _handle_default_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a default field, format is defined by the datatype
         Args:
@@ -360,9 +386,10 @@ class BinaryFileDTO:
         Returns:
             dict: the field handled
         """
-        return {field['name']: self.read_and_unpack(input=self.file, format_string= endianness + field['datatype'])}
+        return {field['name']: self._read_and_unpack(input_bytes=self.file,
+                                                     format_string=endianness + field['datatype'])}
 
-    def handle_date_field(self, field: dict, endianness: str) -> dict:
+    def _handle_date_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a date field, format is defined by the datatype
         Args:
@@ -371,10 +398,14 @@ class BinaryFileDTO:
         Returns:
             dict: the field handled
         """
-        date_bcd = self.file.read(4) # self.read_and_unpack(input=self.file, format_string= endianness + 'B')
-        return {field['name']: self.bcd_to_str(bcd=date_bcd, format=field['datatype'], spacer='/', endianness=endianness)}
-    
-    def handle_time_field(self, field: dict, endianness: str) -> dict:
+        date_bcd = self.file.read(
+            4)  # self._read_and_unpack(input_bytes=self.file, format_string= endianness + 'B')
+        return {field['name']: self._bcd_to_str(bcd=date_bcd,
+                                                format_string=field['datatype'],
+                                                spacer='/',
+                                                endianness=endianness)}
+
+    def _handle_time_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a time field, format is defined by the datatype
         Args:
@@ -383,10 +414,14 @@ class BinaryFileDTO:
         Returns:
             dict: the field handled
         """
-        time_bcd = self.file.read(4) # self.read_and_unpack(input=self.file, format_string= endianness + 'B')
-        return {field['name']: self.bcd_to_str(bcd=time_bcd, format=field['datatype'], spacer=':', endianness=endianness)}
-    
-    def handle_offset_field(self, field: dict, endianness: str) -> dict:
+        time_bcd = self.file.read(
+            4)  # self._read_and_unpack(input_bytes=self.file, format_string= endianness + 'B')
+        return {field['name']: self._bcd_to_str(bcd=time_bcd,
+                                                format_string=field['datatype'],
+                                                spacer=':',
+                                                endianness=endianness)}
+
+    def _handle_offset_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a time offset field, format is defined by the datatype
         Args:
@@ -396,9 +431,13 @@ class BinaryFileDTO:
             dict: the field handled
         """
         offset_bcd = self.file.read(4)
-        return {field['name']: self.bcd_to_str(bcd=offset_bcd, format=field['datatype'], prefix=field['prefix'], spacer=':', endianness=endianness)}
-    
-    def handle_float_field(self, field: dict, endianness: str) -> dict:
+        return {field['name']: self._bcd_to_str(bcd=offset_bcd,
+                                                format_string=field['datatype'],
+                                                prefix=field['prefix'],
+                                                spacer=':',
+                                                endianness=endianness)}
+
+    def _handle_float_field(self, field: dict, endianness: str) -> dict:
         """
         Handles a float field, format is defined by the datatype
         Args:
@@ -407,7 +446,8 @@ class BinaryFileDTO:
         Returns:
             dict: the field handled
         """
-        data = self.read_and_unpack(input=self.file, format_string= endianness + 'I')
+        data = self._read_and_unpack(
+            input_bytes=self.file, format_string=endianness + 'I')
         data = float(data / 1000)
 
         if field.get('decimals', None) is not None:

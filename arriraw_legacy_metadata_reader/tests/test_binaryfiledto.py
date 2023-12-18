@@ -78,12 +78,12 @@ def test_read_and_unpack(struct_file):
         f.seek(0)
 
         # Test read_and_unpack with different format strings
-        assert binary_file_dto.read_and_unpack(f, '>B') == 1  # Unsigned byte
-        assert binary_file_dto.read_and_unpack(f, '>H') == 2  # Unsigned short
-        assert binary_file_dto.read_and_unpack(f, '>L') == 3  # Unsigned long
-        assert binary_file_dto.read_and_unpack(f, '>Q') == 4  # Unsigned long long
-        assert binary_file_dto.read_and_unpack(f, '>f') == 5.0  # Float
-        assert binary_file_dto.read_and_unpack(f, '>d') == 6.0  # Double
+        assert binary_file_dto._read_and_unpack(f, '>B') == 1  # Unsigned byte
+        assert binary_file_dto._read_and_unpack(f, '>H') == 2  # Unsigned short
+        assert binary_file_dto._read_and_unpack(f, '>L') == 3  # Unsigned long
+        assert binary_file_dto._read_and_unpack(f, '>Q') == 4  # Unsigned long long
+        assert binary_file_dto._read_and_unpack(f, '>f') == 5.0  # Float
+        assert binary_file_dto._read_and_unpack(f, '>d') == 6.0  # Double
 
 @pytest.fixture
 def binary_file_little_endian():
@@ -108,12 +108,12 @@ def binary_file_big_endian():
 def test_determine_endianness_little_endian(binary_file_little_endian):
     with open(binary_file_little_endian, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
-        assert binary_file_dto.determine_endianness() == '<'
+        assert binary_file_dto._determine_endianness() == '<'
 
 def test_determine_endianness_big_endian(binary_file_big_endian):
     with open(binary_file_big_endian, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
-        assert binary_file_dto.determine_endianness() == '>'
+        assert binary_file_dto._determine_endianness() == '>'
 
 @pytest.fixture
 def binary_file_with_string():
@@ -128,7 +128,7 @@ def test_read_string(binary_file_with_string):
     with open(binary_file_with_string, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
         f.seek(0)
-        result = binary_file_dto.read_string(f, 13, '>')
+        result = binary_file_dto._read_string(f, 13, '>')
         assert result == 'Hello, World!'
 
 @pytest.fixture
@@ -152,7 +152,7 @@ def test_read_frameline(binary_file_with_frameline):
     with open(binary_file_with_frameline, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
         f.seek(0)
-        result = binary_file_dto.read_frameline(f, '1', '>')
+        result = binary_file_dto._read_frameline(f, '1', '>')
         assert result == {
             'FrameLine1Type': 'Master',
             'FrameLine1Name': 'MyFrameline',
@@ -174,7 +174,7 @@ def test_read_frameline(binary_file_with_frameline):
     (1500, '1.19'),
 ])
 def test_convert_data_to_tstop(data, expected):
-    assert  BinaryFileDTO.convert_data_to_tstop(data) == expected
+    assert  BinaryFileDTO._convert_data_to_tstop(data) == expected
 
 @pytest.fixture
 def binary_file_with_tstop():
@@ -189,7 +189,7 @@ def test_read_tstop(binary_file_with_tstop):
     with open(binary_file_with_tstop, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
         f.seek(0)
-        result = binary_file_dto.read_tstop(f, 'little')
+        result = binary_file_dto._read_tstop(f, 'little')
         assert result == '1.41'
 
 # @pytest.mark.parametrize("bit_positions,expected", [
@@ -216,7 +216,7 @@ def test_read_tstop(binary_file_with_tstop):
 ])
 def test_read_bit(data, bit_position, endianness, expected):
     data = io.BytesIO(data)
-    result = BinaryFileDTO.read_bit(data, bit_position, endianness)
+    result = BinaryFileDTO._read_bit(data, bit_position, endianness)
 
     assert result == expected
 
@@ -227,7 +227,7 @@ def test_read_bit(data, bit_position, endianness, expected):
     (binascii.unhexlify('FFFFFFFF'), 'ff:ff:ff:ff')
 ])
 def test_bytestoTC(TCbytes, expected):
-    assert BinaryFileDTO.bytestoTC(TCbytes) == expected
+    assert BinaryFileDTO._bytes_to_time_code(TCbytes) == expected
 
 @pytest.mark.parametrize("input_string,expected", [
     ("key1:value1;key2:value2", {"key1": "value1", "key2": "value2"}),
@@ -237,7 +237,7 @@ def test_bytestoTC(TCbytes, expected):
     ("", {}),
 ])
 def test_split_user_string(input_string, expected):
-    result = BinaryFileDTO.split_user_string(input_string)
+    result = BinaryFileDTO._split_user_string(input_string)
     assert result == expected
 
 @pytest.mark.parametrize("bcd, format, spacer, endianness, prefix, expected", [
@@ -247,7 +247,7 @@ def test_split_user_string(input_string, expected):
     (b'\x12\x34\x56\x78', 'time', ':', '<', None, '12:34:56:78'),
 ])
 def test_bcd_to_str(bcd, format, spacer, endianness, prefix, expected):
-    result = BinaryFileDTO.bcd_to_str(bcd, format, spacer, endianness, prefix)
+    result = BinaryFileDTO._bcd_to_str(bcd, format, spacer, endianness, prefix)
     assert result == expected
 
 @pytest.fixture
