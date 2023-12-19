@@ -93,10 +93,10 @@ class ArriRawLegacyMetadataReader:
 
         for obj in self.objects:
             fields.extend(obj.list_fields())
-
         return fields
 
-def read_metadata(file_path: str, fields_to_extract: Union[list, None]=None) -> dict:
+def read_metadata(file_path: str, 
+                  fields_to_extract: Union[list, None]=None) -> dict:
     """
     Function to read the metadata from an ARRIRAW file.
     Creates a new ArriRawLegacyMetadataReader object and returns the metadata as a dictionary.
