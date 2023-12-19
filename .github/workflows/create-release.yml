@@ -44,11 +44,11 @@ jobs:
             CMD_BUILD: pyinstaller cli-macos-x86.spec
             OUT_FILE_NAME: cli-macos-x86
             ASSET_MIME: application/x-mach-binary
-          - os: macos-latest
-            TARGET: macos-latest-xlarge
-            CMD_BUILD: pyinstaller cli-macos-arm64.spec
-            OUT_FILE_NAME: cli-macos-arm64
-            ASSET_MIME: application/x-mach-binary
+          # - os: macos-latest
+          #   TARGET: macos-latest-xlarge
+          #   CMD_BUILD: pyinstaller cli-macos-arm64.spec
+          #   OUT_FILE_NAME: cli-macos-arm64
+          #   ASSET_MIME: application/x-mach-binary
           - os: windows-latest
             TARGET: windows
             CMD_BUILD: pyinstaller cli-windows.spec
