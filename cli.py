@@ -3,6 +3,7 @@ Command line interface for the arriraw_legacy_metadata_reader package.
 """
 import os
 import sys
+import sys
 import json
 import click
 from pathlib import Path
@@ -63,12 +64,6 @@ def run(inputpath, verbose, config, outputpath, format, fields):
     if outputpath is None:
         outputpath = os.getcwd()
 
-    if config == 'defaultconfig':
-        script_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.realpath(sys.executable)))
-        config = Path(script_dir) / 'config.json'
-
-    click.echo(f'Input path: {config}')
-
     outputfile = os.path.join(outputpath, f'metadata.{format}')
     loaded_config = load_config(config, ["supported_files", "defaultfields"])
     supported_files = loaded_config["supported_files"]
@@ -81,6 +76,8 @@ def run(inputpath, verbose, config, outputpath, format, fields):
         fields = None
 
     output = {}
+
+    click.echo(f'Input path: {inputpath}')
 
     for file in find_files(inputpath.strip('\'').strip('\"'), supported_files):
 
