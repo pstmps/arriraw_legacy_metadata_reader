@@ -2,3 +2,8 @@ __pycache__/**
 notes
 tests/__pycache__/**
 .coverage
+dist/**
+build/**
+*.egg-info/**
+build-env/**
+```
