@@ -6,15 +6,15 @@ import json
 from typing import Union
 import pandas as pd
 
-from arriraw_legacy_metadata_reader.idi import Idi
-from arriraw_legacy_metadata_reader.ici import Ici
-from arriraw_legacy_metadata_reader.cdi import Cdi
-from arriraw_legacy_metadata_reader.ldi import Ldi
-from arriraw_legacy_metadata_reader.vfx import Vfx
-from arriraw_legacy_metadata_reader.cid import Cid
-from arriraw_legacy_metadata_reader.sid import Sid
-from arriraw_legacy_metadata_reader.fli import Fli
-from arriraw_legacy_metadata_reader.nri import Nri
+from arriraw_legacy_metadata_reader.IDI import Idi
+from arriraw_legacy_metadata_reader.ICI import Ici
+from arriraw_legacy_metadata_reader.CDI import Cdi
+from arriraw_legacy_metadata_reader.LDI import Ldi
+from arriraw_legacy_metadata_reader.VFX import Vfx
+from arriraw_legacy_metadata_reader.CID import Cid
+from arriraw_legacy_metadata_reader.SID import Sid
+from arriraw_legacy_metadata_reader.FLI import Fli
+from arriraw_legacy_metadata_reader.NRI import Nri
 
 class ArriRawLegacyMetadataReader:
     """
