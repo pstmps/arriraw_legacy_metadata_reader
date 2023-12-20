@@ -3,7 +3,7 @@ Defines the ICI class, which defines the ICI metadata block in ARRIRAW files.
 """
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class ICI(BinaryFileDTO):
+class Ici(BinaryFileDTO):
     """
     Class to read the ICI information from an ARRIRAW file.
     """

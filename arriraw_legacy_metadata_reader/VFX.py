@@ -3,7 +3,7 @@ Defines the VFX class, which defines the VFX metadata block in ARRIRAW files.
 """
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class VFX(BinaryFileDTO):
+class Vfx(BinaryFileDTO):
     """
     Class to read the VFX information from an ARRIRAW file.
     """

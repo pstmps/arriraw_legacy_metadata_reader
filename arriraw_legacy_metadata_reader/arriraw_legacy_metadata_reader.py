@@ -6,15 +6,15 @@ import json
 from typing import Union
 import pandas as pd
 
-from arriraw_legacy_metadata_reader.IDI import IDI
-from arriraw_legacy_metadata_reader.ICI import ICI
-from arriraw_legacy_metadata_reader.CDI import CDI
-from arriraw_legacy_metadata_reader.LDI import LDI
-from arriraw_legacy_metadata_reader.VFX import VFX
-from arriraw_legacy_metadata_reader.CID import CID
-from arriraw_legacy_metadata_reader.SID import SID
-from arriraw_legacy_metadata_reader.FLI import FLI
-from arriraw_legacy_metadata_reader.NRI import NRI
+from arriraw_legacy_metadata_reader.idi import Idi
+from arriraw_legacy_metadata_reader.ici import Ici
+from arriraw_legacy_metadata_reader.cdi import Cdi
+from arriraw_legacy_metadata_reader.ldi import Ldi
+from arriraw_legacy_metadata_reader.vfx import Vfx
+from arriraw_legacy_metadata_reader.cid import Cid
+from arriraw_legacy_metadata_reader.sid import Sid
+from arriraw_legacy_metadata_reader.fli import Fli
+from arriraw_legacy_metadata_reader.nri import Nri
 
 class ArriRawLegacyMetadataReader:
     """
@@ -30,23 +30,23 @@ class ArriRawLegacyMetadataReader:
 
         self.objects = []
 
-        self.objects.append(IDI(file=self.rawdata,
+        self.objects.append(Idi(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
-        self.objects.append(ICI(file=self.rawdata,
+        self.objects.append(Ici(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
-        self.objects.append(CDI(file=self.rawdata,
+        self.objects.append(Cdi(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
-        self.objects.append(LDI(file=self.rawdata,
+        self.objects.append(Ldi(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
-        self.objects.append(VFX(file=self.rawdata,
+        self.objects.append(Vfx(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
-        self.objects.append(CID(file=self.rawdata,
+        self.objects.append(Cid(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
-        self.objects.append(SID(file=self.rawdata,
+        self.objects.append(Sid(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
-        self.objects.append(FLI(file=self.rawdata,
+        self.objects.append(Fli(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
-        self.objects.append(NRI(file=self.rawdata,
+        self.objects.append(Nri(file=self.rawdata,
                                 fields_to_extract=self.fields_to_extract))
 
     def get_dictionary(self) -> dict:
@@ -95,7 +95,7 @@ class ArriRawLegacyMetadataReader:
             fields.extend(obj.list_fields())
         return fields
 
-def read_metadata(file_path: str, 
+def read_metadata(file_path: str,
                   fields_to_extract: Union[list, None]=None) -> dict:
     """
     Function to read the metadata from an ARRIRAW file.

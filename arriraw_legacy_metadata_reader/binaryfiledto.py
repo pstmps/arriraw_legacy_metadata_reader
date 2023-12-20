@@ -32,6 +32,9 @@ class BinaryFileDTO(ABC):
             raise TypeError('file must be a bytes object or a BufferedReader')
         self.fields_to_extract = fields_to_extract
         self.endianness = self._determine_endianness()
+        # add empty fields and data attributes to the class to make the linter happier
+        self.fields = []
+        self.data = {}
 
     def list_fields(self) -> list:
         """
@@ -245,7 +248,7 @@ class BinaryFileDTO(ABC):
             )
         if format_string == 'offset':
             return f"{prefix}{date_string[4:6]}{spacer}{date_string[6:8]}"
-        
+
         return date_string
 
     def extract_metadata(self) -> dict:

@@ -4,7 +4,7 @@ Defines the SID class, which defines the SID metadata block in ARRIRAW files.
 
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class SID(BinaryFileDTO):
+class Sid(BinaryFileDTO):
     """
     Class to read the SID information from an ARRIRAW file.
     """

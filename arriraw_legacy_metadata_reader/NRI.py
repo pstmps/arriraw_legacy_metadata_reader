@@ -4,7 +4,7 @@ Defines the NRI class, which defines the NRI metadata block in ARRIRAW files.
 
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class NRI(BinaryFileDTO):
+class Nri(BinaryFileDTO):
     """
     Class to read the NRI information from an ARRIRAW file.
     """

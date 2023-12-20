@@ -3,7 +3,7 @@ Defines the FLI class, which defines the FLI metadata block in ARRIRAW files.
 """
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class FLI(BinaryFileDTO):
+class Fli(BinaryFileDTO):
     """
     Class to read the FLI information from an ARRIRAW file.
     """

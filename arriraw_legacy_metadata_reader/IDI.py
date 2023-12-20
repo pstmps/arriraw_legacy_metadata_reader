@@ -4,7 +4,7 @@ Defines the IDI class, which defines the IDI metadata block in ARRIRAW files.
 
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class IDI(BinaryFileDTO):
+class Idi(BinaryFileDTO):
     """
     Class to read the IDI information from an ARRIRAW file.
     """

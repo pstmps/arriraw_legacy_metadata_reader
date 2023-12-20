@@ -3,7 +3,7 @@ Defines the LDI class, which defines the LDI metadata block in ARRIRAW files.
 """
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class LDI(BinaryFileDTO):
+class Ldi(BinaryFileDTO):
     """
     Class to read the LDI information from an ARRIRAW file.
     """

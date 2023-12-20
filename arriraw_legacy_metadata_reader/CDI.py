@@ -4,7 +4,7 @@ Defines the CDI class, which defines the CDI metadata block in ARRIRAW files.
 
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class CDI(BinaryFileDTO):
+class Cdi(BinaryFileDTO):
     """
     Class to read the CDI information from an ARRIRAW file.
     """

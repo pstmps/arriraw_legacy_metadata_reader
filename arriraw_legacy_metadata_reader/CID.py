@@ -3,7 +3,7 @@ Defines the CID class, which defines the CID metadata block in ARRIRAW files.
 """
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
-class CID(BinaryFileDTO):
+class Cid(BinaryFileDTO):
     """
     Class to read the CID information from an ARRIRAW file.
     """
