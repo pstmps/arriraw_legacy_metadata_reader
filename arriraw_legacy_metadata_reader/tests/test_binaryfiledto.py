@@ -6,6 +6,7 @@ import io
 import os
 import binascii
 
+
 @pytest.fixture
 def binary_file():
     filename_binary = 'test.ari'
@@ -15,6 +16,7 @@ def binary_file():
         f.write(data)
     yield filename_binary
     os.remove(filename_binary)
+
 
 def test_list_fields(binary_file):
     # Create an instance of BinaryFileDTO with some fields
@@ -28,6 +30,7 @@ def test_list_fields(binary_file):
         result = binary_file_dto.list_fields()
 
     assert result == ['field1', 'field2', 'field3']
+
 
 def test_list_data_names(binary_file):
     # Create an instance of BinaryFileDTO with some fields
@@ -45,6 +48,7 @@ def test_list_data_names(binary_file):
         result = binary_file_dto.list_data_names()
         assert result == ['field1', 'field2', 'field3']
 
+
 def test_get_data(binary_file):
     # Create an instance of BinaryFileDTO with some fields
     with open(binary_file, 'rb') as f:
@@ -61,6 +65,7 @@ def test_get_data(binary_file):
         result = binary_file_dto.get_data()
         assert result == {'field1': 1, 'field2': 2, 'field3': 3}
 
+
 @pytest.fixture
 def struct_file():
     filename_struct = 'struct.arx'
@@ -70,6 +75,7 @@ def struct_file():
         f.write(data)
     yield filename_struct
     os.remove(filename_struct)
+
 
 def test_read_and_unpack(struct_file):
     # Create an instance of BinaryFileDTO
@@ -85,6 +91,7 @@ def test_read_and_unpack(struct_file):
         assert binary_file_dto._read_and_unpack(f, '>f') == 5.0  # Float
         assert binary_file_dto._read_and_unpack(f, '>d') == 6.0  # Double
 
+
 @pytest.fixture
 def binary_file_little_endian():
     filename = 'little_endian.ari'
@@ -94,6 +101,7 @@ def binary_file_little_endian():
         f.write(os.urandom(1024))
     yield filename
     os.remove(filename)
+
 
 @pytest.fixture
 def binary_file_big_endian():
@@ -105,15 +113,18 @@ def binary_file_big_endian():
     yield filename
     os.remove(filename)
 
+
 def test_determine_endianness_little_endian(binary_file_little_endian):
     with open(binary_file_little_endian, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
         assert binary_file_dto._determine_endianness() == '<'
 
+
 def test_determine_endianness_big_endian(binary_file_big_endian):
     with open(binary_file_big_endian, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
         assert binary_file_dto._determine_endianness() == '>'
+
 
 @pytest.fixture
 def binary_file_with_string():
@@ -124,12 +135,14 @@ def binary_file_with_string():
     yield filename
     os.remove(filename)
 
+
 def test_read_string(binary_file_with_string):
     with open(binary_file_with_string, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
         f.seek(0)
         result = binary_file_dto._read_string(f, 13, '>')
         assert result == 'Hello, World!'
+
 
 @pytest.fixture
 def binary_file_with_frameline():
@@ -148,6 +161,7 @@ def binary_file_with_frameline():
     yield filename
     os.remove(filename)
 
+
 def test_read_frameline(binary_file_with_frameline):
     with open(binary_file_with_frameline, 'rb') as f:
         binary_file_dto = BinaryFileDTO(f)
@@ -162,6 +176,7 @@ def test_read_frameline(binary_file_with_frameline):
             'FrameLine1Height': 40,
         }
 
+
 @pytest.mark.parametrize("data,expected", [
     (-3, 'NearClose'),
     (-2, 'Close'),
@@ -174,7 +189,8 @@ def test_read_frameline(binary_file_with_frameline):
     (1500, '1.19'),
 ])
 def test_convert_data_to_tstop(data, expected):
-    assert  BinaryFileDTO._convert_data_to_tstop(data) == expected
+    assert BinaryFileDTO._convert_data_to_tstop(data) == expected
+
 
 @pytest.fixture
 def binary_file_with_tstop():
@@ -184,6 +200,7 @@ def binary_file_with_tstop():
         f.write(os.urandom(1024))  # 1KB of random data
     yield filename
     os.remove(filename)
+
 
 def test_read_tstop(binary_file_with_tstop):
     with open(binary_file_with_tstop, 'rb') as f:
@@ -204,6 +221,7 @@ def test_read_tstop(binary_file_with_tstop):
 # def test_create_bit_mask(bit_positions, expected):
 #     assert BinaryFileDTO.create_bit_mask(bit_positions) == expected
 
+
 @pytest.mark.parametrize("data,bit_position,endianness,expected", [
     (b'\x01\x00\x00\x00', 0, 'little', 1),
     (b'\x01\x00\x00\x00', 31, 'little', 0),
@@ -220,6 +238,7 @@ def test_read_bit(data, bit_position, endianness, expected):
 
     assert result == expected
 
+
 @pytest.mark.parametrize("TCbytes,expected", [
     (binascii.unhexlify('67452301'), '01:23:45:67'),
     (binascii.unhexlify('78563412'), '12:34:56:78'),
@@ -228,6 +247,7 @@ def test_read_bit(data, bit_position, endianness, expected):
 ])
 def test_bytestoTC(TCbytes, expected):
     assert BinaryFileDTO._bytes_to_time_code(TCbytes) == expected
+
 
 @pytest.mark.parametrize("input_string,expected", [
     ("key1:value1;key2:value2", {"key1": "value1", "key2": "value2"}),
@@ -240,6 +260,7 @@ def test_split_user_string(input_string, expected):
     result = BinaryFileDTO._split_user_string(input_string)
     assert result == expected
 
+
 @pytest.mark.parametrize("bcd, format, spacer, endianness, prefix, expected", [
     (b'\x12\x34\x56\x78', 'date', '/', '>', None, '7856/34/12'),
     (b'\x12\x34\x56\x78', 'date', '/', '<', None, '1234/56/78'),
@@ -249,6 +270,7 @@ def test_split_user_string(input_string, expected):
 def test_bcd_to_str(bcd, format, spacer, endianness, prefix, expected):
     result = BinaryFileDTO._bcd_to_str(bcd, format, spacer, endianness, prefix)
     assert result == expected
+
 
 @pytest.fixture
 def binary_file_dto_fields():
@@ -261,6 +283,7 @@ def binary_file_dto_fields():
         f.write(os.urandom(1024))  # 1KB of random data
     yield filename
     os.remove(filename)
+
 
 def test_extract_metadata_all_fields(binary_file_dto_fields):
     # Create an instance of BinaryFileDTO with some fields
@@ -279,6 +302,7 @@ def test_extract_metadata_all_fields(binary_file_dto_fields):
         result = binary_file_dto.extract_metadata()
         assert result == {'field1': 1, 'field2': 2, 'field3': 3}
 
+
 def test_extract_metadata_some_fields(binary_file_dto_fields):
     # Create an instance of BinaryFileDTO with some fields
     with open(binary_file_dto_fields, 'rb') as f:
@@ -295,6 +319,7 @@ def test_extract_metadata_some_fields(binary_file_dto_fields):
         # Call extract_metadata and check the result
         result = binary_file_dto.extract_metadata()
         assert result == {'field1': 1, 'field3': 3}
+
 
 def test_extract_metadata_with_mapping(binary_file_dto_fields):
     # Create an instance of BinaryFileDTO with some fields
@@ -325,5 +350,6 @@ def test_extract_metadata_with_mapping(binary_file_dto_fields):
 # def test_handle_field(binary_file_dto, field, endianness, expected):
 #     result = binary_file_dto.handle_field(field, endianness)
 #     assert result == expected
+
 
 pytest.main()

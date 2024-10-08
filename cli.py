@@ -12,6 +12,7 @@ import pandas as pd
 from arriraw_legacy_metadata_reader.arriraw_legacy_metadata_reader \
     import ArriRawLegacyMetadataReader
 
+
 def validate_json(json_object: str, keys: list) -> list:
     """
     Validates a JSON object against a list of keys.
@@ -25,7 +26,8 @@ def validate_json(json_object: str, keys: list) -> list:
     missing_keys = [key for key in keys if key not in json_object]
     return missing_keys
 
-def load_config(file: str, keys: list=None) -> dict:
+
+def load_config(file: str, keys: list = None) -> dict:
     """
     Loads a JSON config file and validates it against a list of keys.
     Args:
@@ -37,7 +39,7 @@ def load_config(file: str, keys: list=None) -> dict:
     if keys is None:
         keys = []
     try:
-        with open(file=file,encoding='UTF8') as f:
+        with open(file=file, encoding='UTF8') as f:
             config = json.load(f)
     except Exception as e:
         raise FileNotFoundError(f"Error loading {file}. Original error: {str(e)}") from e
@@ -46,7 +48,8 @@ def load_config(file: str, keys: list=None) -> dict:
         print("Invalid config file. Missing keys: ", missing_keys)
     return config
 
-def find_files(path: str, extensions: list, ignore_multipart: bool=True) -> list:
+
+def find_files(path: str, extensions: list, ignore_multipart: bool = True) -> list:
     """
     Function to find files with a given extension in a directory.
     Args:
@@ -66,6 +69,7 @@ def find_files(path: str, extensions: list, ignore_multipart: bool=True) -> list
         raise FileNotFoundError(f"No files with the extensions {' '.join(extensions)} were found.")
     return file_paths
 
+
 def write_file(outputformat: str, outputfile: str, output: dict) -> None:
     """
     Writes the output to a file.
@@ -84,6 +88,7 @@ def write_file(outputformat: str, outputfile: str, output: dict) -> None:
         with open(file=outputfile, mode='w', encoding='UTF8') as f:
             json.dump(output, f, indent=4)
 
+
 def print_to_console(output: dict) -> None:
     """
     Prints the output to the console.
@@ -94,6 +99,8 @@ def print_to_console(output: dict) -> None:
         click.echo(f'Key: {key:32} -- Value: {value}')
 
 # pylint: disable=E1120
+
+
 @click.command()
 @click.option('--inputpath', '-i',
               help='Path to the directory containing the files to be processed.',
@@ -168,6 +175,7 @@ def run(inputpath, verbose, config, outputpath, outputformat, fields):
 
         outputfile = os.path.join(outputpath, f'{filename}.{outputformat}')
         write_file(outputformat, outputfile, output[filename])
+
 
 if __name__ == "__main__":
 

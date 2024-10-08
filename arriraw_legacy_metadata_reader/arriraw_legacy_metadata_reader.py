@@ -16,10 +16,12 @@ from arriraw_legacy_metadata_reader.SID import Sid
 from arriraw_legacy_metadata_reader.FLI import Fli
 from arriraw_legacy_metadata_reader.NRI import Nri
 
+
 class ArriRawLegacyMetadataReader:
     """
     Class to read the metadata from an ARRIRAW file.
     """
+
     def __init__(self, file_path: str, fields_to_extract: Union[list, None] = None):
         try:
             with open(file_path, 'rb') as f:
@@ -81,6 +83,7 @@ class ArriRawLegacyMetadataReader:
         for obj in self.objects:
             fields.extend(obj.list_fields())
         return fields
+
 
 def read_metadata(file_path: str, fields_to_extract: Union[list, None] = None) -> dict:
     """

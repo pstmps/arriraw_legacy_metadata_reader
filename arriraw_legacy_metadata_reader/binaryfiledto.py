@@ -10,6 +10,7 @@ import io
 from typing import Union
 from abc import ABC
 
+
 class BinaryFileDTO(ABC):
     """
     Base class for reading binary ARRIRAW files
@@ -61,7 +62,7 @@ class BinaryFileDTO(ABC):
         return self.data
 
     def _read_and_unpack(self, input_bytes: bytes, format_string: str) \
-                        -> Union[int, float, str, bytes]:
+            -> Union[int, float, str, bytes]:
         """
         Reads and unpacks data from the file
         Args:
@@ -157,7 +158,7 @@ class BinaryFileDTO(ABC):
         if data in tstop_mapping:
             return tstop_mapping[data]
 
-        tstop = 2 ** (((data/1000) - 1) / 2)
+        tstop = 2 ** (((data / 1000) - 1) / 2)
         return str(round(tstop, 2))
 
     @staticmethod
@@ -191,9 +192,9 @@ class BinaryFileDTO(ABC):
             str: the timecode converted from the byte object
         """
         hex_tc = binascii.hexlify(time_code_bytes).decode()
-        reversed_tc = ''.join([hex_tc[i:i+2]
+        reversed_tc = ''.join([hex_tc[i:i + 2]
                               for i in range(0, len(hex_tc), 2)][::-1])
-        timecode = ':'.join([reversed_tc[i:i+2]
+        timecode = ':'.join([reversed_tc[i:i + 2]
                             for i in range(0, len(reversed_tc), 2)])
         return timecode
 
