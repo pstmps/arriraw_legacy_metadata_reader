@@ -66,7 +66,7 @@ class BinaryFileDTO(ABC):
         """
         Reads and unpacks data from the file
         Args:
-            format_string (str): format string for the struct.unpack 
+            format_string (str): format string for the struct.unpack
             method containing the datatype and endianness
         Returns:
             Union[int, float, str, bytes]: the data read from the file
@@ -80,7 +80,7 @@ class BinaryFileDTO(ABC):
             str: '<' for little endian, '>' for big endian
         """
         self.file.seek(0)
-        ari_magic = self.file.read(4)
+        self.ari_magic = self.file.read(4)
         ari_byte_order = self._read_and_unpack(self.file, '<I')
         is_little_endian = ari_byte_order == 0x12345678
         return '<' if is_little_endian else '>'
