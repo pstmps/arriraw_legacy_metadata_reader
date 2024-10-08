@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  workflow_dispatch:
 
 jobs:
 
@@ -80,7 +81,7 @@ jobs:
       id: get_release_info
       shell: bash
       run: |
-        value=`cat release_url/release_url.txt`
+        value=`cat release_url.txt`
         echo ::set-output name=upload_url::$value
     - name: Upload Release Asset
       id: upload-release-asset
