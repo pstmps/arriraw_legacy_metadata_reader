@@ -1,9 +1,12 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
 import pytest
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
 
 import struct
 import io
-import os
 import binascii
 
 
