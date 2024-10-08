@@ -1,12 +1,13 @@
-import sys
+# import sys
 import os
 import struct
 import io
 import binascii
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from arriraw_legacy_metadata_reader.binaryfiledto import BinaryFileDTO
+
 
 @pytest.fixture
 def binary_file():
