@@ -5,6 +5,7 @@ tests/__pycache__/**
 build/**
 *.egg-info/**
 build-env/**
+buildenv/**
 metadata.json
 arriraw_legacy_metadata_reader/__pycache__/**
 ```

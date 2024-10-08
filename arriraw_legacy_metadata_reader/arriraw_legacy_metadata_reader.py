@@ -1,5 +1,6 @@
 """
-Defines the ArriRawLegacyMetadataReader class, which is used to read metadata from ARRIRAW files.
+Defines the ArriRawLegacyMetadataReader class,
+which is used to read metadata from ARRIRAW files.
 """
 
 import json
@@ -16,13 +17,15 @@ from arriraw_legacy_metadata_reader.SID import Sid
 from arriraw_legacy_metadata_reader.FLI import Fli
 from arriraw_legacy_metadata_reader.NRI import Nri
 
+
 class ArriRawLegacyMetadataReader:
     """
     Class to read the metadata from an ARRIRAW file.
     """
+
     def __init__(self, file_path: str, fields_to_extract: Union[list, None] = None):
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 self.rawdata = f.read(4096)
         except (FileNotFoundError, IOError) as e:
             raise e
@@ -37,7 +40,7 @@ class ArriRawLegacyMetadataReader:
             Cid(file=self.rawdata, fields_to_extract=self.fields_to_extract),
             Sid(file=self.rawdata, fields_to_extract=self.fields_to_extract),
             Fli(file=self.rawdata, fields_to_extract=self.fields_to_extract),
-            Nri(file=self.rawdata, fields_to_extract=self.fields_to_extract)
+            Nri(file=self.rawdata, fields_to_extract=self.fields_to_extract),
         ]
 
     def _collect_metadata(self) -> dict:
@@ -61,7 +64,7 @@ class ArriRawLegacyMetadataReader:
             pandas.DataFrame: The metadata as a pandas DataFrame
         """
         metadata = self._collect_metadata()
-        return pd.DataFrame.from_dict(metadata, orient='index').transpose()
+        return pd.DataFrame.from_dict(metadata, orient="index").transpose()
 
     def get_json(self) -> str:
         """
@@ -82,6 +85,7 @@ class ArriRawLegacyMetadataReader:
             fields.extend(obj.list_fields())
         return fields
 
+
 def read_metadata(file_path: str, fields_to_extract: Union[list, None] = None) -> dict:
     """
     Function to read the metadata from an ARRIRAW file.
@@ -93,4 +97,6 @@ def read_metadata(file_path: str, fields_to_extract: Union[list, None] = None) -
     Returns:
         dict: The metadata as a dictionary
     """
-    return ArriRawLegacyMetadataReader(file_path=file_path, fields_to_extract=fields_to_extract).get_dictionary()
+    return ArriRawLegacyMetadataReader(
+        file_path=file_path, fields_to_extract=fields_to_extract
+    ).get_dictionary()
