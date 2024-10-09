@@ -1,5 +1,9 @@
 # ARRI Raw Metadata Reader
 
+[![Lint with flake8](https://github.com/pstmps/arriraw_legacy_metadata_reader/actions/workflows/lint_flake8.yml/badge.svg)](https://github.com/pstmps/arriraw_legacy_metadata_reader/actions/workflows/lint_flake8.yml)
+
+
+
 A Python package to read legacy ARRI Raw metadata, including a cross-platform demo CLI built with GitHub Actions.
 
 ## Features
